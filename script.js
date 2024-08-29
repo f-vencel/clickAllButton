@@ -4,7 +4,7 @@ const buttonFixed = document.querySelector('.button.catch.fixed');
 const field = document.querySelector('.field');
 const winDrop = document.querySelector('.winBefore');
 const win = winDrop.nextElementSibling;
-const score = document.querySelector('.score .load');
+const score = document.querySelector('.score');
 const scorePoint = document.querySelector('.score .points');
 
 
@@ -13,8 +13,8 @@ let over = false;
 let timeoutPool = [];
 const time = {
   start: 5000,
-  end: 20000,
-  includeRand: true
+  end: 100000,
+  includeRand: false
 }
 time.diff = time.end - time.start;
 time.scale = () => time.includeRand ? random() : 1;
@@ -24,7 +24,7 @@ const _button = {
   x: buttonFixed.offsetWidth,
   y: buttonFixed.offsetHeight,
   say: 'Click me',
-  number: 10
+  number: 4
 }
 let body = {
   x: field.offsetWidth,
@@ -88,8 +88,6 @@ function createButtons() {
 }
 
 function restartButtons() {
-  score.style.setProperty('border-right-width', '2px');
-
   timeoutPool.forEach(id => clearTimeout(id));
   timeoutPool = [];
   over = false;
@@ -124,7 +122,8 @@ function scheduleReappear(button) {
     winButtons();
   }
   else {
-    let t = time.start + time.diff * (currentDeleted / _button.number) * time.scale()
+    let t = time.start + time.diff * (currentDeleted / _button.number) * time.scale();
+    console.log(t);
     timeoutPool.push(setTimeout(() => {
       if (!over) {
         currentDeleted--;
@@ -149,8 +148,6 @@ function buttonFunction(button) {
 }
 
 function winButtons() {
-  score.style.setProperty('border-right-width', '0');
-
   console.log('win');
   winDrop.style.display = 'block';
   win.style.display = 'flex';
@@ -166,7 +163,7 @@ function winButtons() {
 }
 
 function changeScore() {
-  score.style.setProperty('width', 100 * currentDeleted / _button.number + '%');
+  score.style.setProperty('--score-percentage', 100 * currentDeleted / _button.number + '%');
 
   scorePoint.innerHTML = currentDeleted + ' / ' + _button.number;
 }

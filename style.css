@@ -11,25 +11,37 @@ body {
   background-color: #ff9;
 }
 
+
+@property --score-percentage {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: true;
+}
+
 .score {
   height: clamp(15px, 1rem, 45px);
   width: 100%;
-  background-color: rgba(0, 0, 255, 0.2);
+  background-color: black;
   box-sizing: border-box;
   border-bottom: 2px solid #000;
 
   position: relative;
+
+  color: #ff9;
+  overflow: hidden;
 }
 .score .load {
   position: absolute;
-  width: 0;
+  width: calc(100% + 5px);
   height: 100%;
-  background-image: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 40%), hsl(120, 100%, 50%));
-
+  
   box-sizing: border-box;
-  border-right: 2px solid hsl(120, 100%, 40%);
+  
+  transition: --score-percentage 500ms;
 
-  transition: width 500ms;
+  background-color: hsl(120, 100%, 50%);
+  background-image: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 40%), hsl(120, 100%, 50%));
+  mask-image: linear-gradient(90deg, #000 max(0, calc(var(--score-percentage) - 5px)), #000a max(0, calc(var(--score-percentage) - 5px)) var(--score-percentage), #0000 var(--score-percentage));
 }
 .score .points {
   position: absolute;
