@@ -5,6 +5,7 @@ const field = document.querySelector('.field');
 const winDrop = document.querySelector('.winBefore');
 const win = winDrop.nextElementSibling;
 const score = document.querySelector('.score .load');
+const scorePoint = document.querySelector('.score .points');
 
 
 let currentDeleted = 0;
@@ -23,7 +24,7 @@ const _button = {
   x: buttonFixed.offsetWidth,
   y: buttonFixed.offsetHeight,
   say: 'Click me',
-  number: 20
+  number: 10
 }
 let body = {
   x: field.offsetWidth,
@@ -39,7 +40,9 @@ window.onresize = (e) => {
   body.maxY = body.y - _button.y;
 };
 
-function randomize(button) {
+console.log(body)
+
+function randomizeButtonPosition(button) {
   _random = {
     x: Math.floor(random() * body.maxX),
     y: Math.floor(random() * body.maxY)
@@ -59,9 +62,25 @@ function random(depth) {
 
 
 function createButtons() {
+  changeScore();
+
   const element = document.createElement('button');
   element.className = 'button catch';
-  element.innerHTML = _button.say;
+
+  const hitSpanCount = getComputedStyle(field).getPropertyValue('--hit-span-count');
+
+  for (let i = 0; i < hitSpanCount; i++) {
+    const span = document.createElement('span');
+    span.className = 'hit-span';
+    span.style.setProperty('--i', i);
+
+    const inner = document.createElement('span');
+    inner.className = 'inner';
+    span.appendChild(inner);
+
+    element.appendChild(span);
+  }
+  element.appendChild(document.createTextNode(_button.say));
 
   for (let i = 0; i < _button.number; i++) {
     buttonFunction(element.cloneNode(true));
@@ -71,41 +90,59 @@ function createButtons() {
 function restartButtons() {
   score.style.setProperty('border-right-width', '2px');
 
+  timeoutPool.forEach(id => clearTimeout(id));
+  timeoutPool = [];
   over = false;
   currentDeleted = 0;
-  changeScore(currentDeleted);
+  changeScore();
 
   [...field.children].forEach(button => {
-    randomize(button);
-    button.style.display = 'inline-block';
+    randomizeButtonPosition(button);
+
+    makeButtonAppear(button);
   });
 }
 
+function makeButtonDisAppear(button) {
+  button.classList.toggle('hit-effect');
+}
+function makeButtonAppear(button) {
+  button.classList.toggle('hit-effect');
+}
+
+function onButtonPress(e, button) {
+  currentDeleted++;
+  changeScore();
+
+  makeButtonDisAppear(button);
+
+  scheduleReappear(button);
+}
+function scheduleReappear(button) {
+  if (currentDeleted === _button.number) {
+    over = true;
+    winButtons();
+  }
+  else {
+    let t = time.start + time.diff * (currentDeleted / _button.number) * time.scale()
+    timeoutPool.push(setTimeout(() => {
+      if (!over) {
+        currentDeleted--;
+        changeScore();
+        randomizeButtonPosition(button);
+
+        makeButtonAppear(button); 
+      }
+    }, t));
+  }
+}
+
 function buttonFunction(button) {
-  randomize(button);
+  randomizeButtonPosition(button);
 
   button.onmousedown = (e) => {
-    currentDeleted++;
-    changeScore(currentDeleted);
-
     e.preventDefault();
-
-    button.style.display = 'none';
-    if (currentDeleted === _button.number) {
-      over = true;
-      winButtons();
-    }
-    else {
-      let t = time.start + time.diff * (currentDeleted / _button.number) * time.scale()
-      timeoutPool.push(setTimeout(() => {
-        if (!over) {
-          currentDeleted--;
-          changeScore(currentDeleted);
-          randomize(button);
-          button.style.display = 'inline-block';
-        }
-      }, t));
-    }
+    onButtonPress(e, button);    
   };
 
   field.appendChild(button);
@@ -123,16 +160,15 @@ function winButtons() {
       winDrop.style.display = 'none';
       win.style.display = 'none';
 
-      timeoutPool.forEach(id => clearTimeout(id));
-      timeoutPool = [];
-
       restartButtons();
     }
   }
 }
 
-function changeScore(sc) {
-  score.style.setProperty('width', 100 * sc / _button.number + '%');
+function changeScore() {
+  score.style.setProperty('width', 100 * currentDeleted / _button.number + '%');
+
+  scorePoint.innerHTML = currentDeleted + ' / ' + _button.number;
 }
 
 createButtons();
