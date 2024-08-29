@@ -2,6 +2,8 @@
 
 ## a little online game about clicking buttons
 
-The goal is to hit all button, before they reappear
+Your goal is to hit all button as fast as possible.
 
-The faster you are the more time it takes the buttons to reappear
+**But there is a catch** <br>
+the buttons start reappearing after some time. <br>
+the faster you are the more time it takes the buttons to reappear
