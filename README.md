@@ -7,3 +7,5 @@
 **But there is a catch** <br>
 the buttons start reappearing after some time. <br>
 the faster you are the more time it takes the buttons to reappear
+
+ <http://f-vencel.github.io/clickAllButton>
