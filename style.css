@@ -18,6 +18,17 @@ body {
   inherits: true;
 }
 
+.settings {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+
+  input[type="number"] {
+  field-sizing: content;
+    min-width: 3rem;
+    max-width: 10rem;
+  }
+}
 .score {
   height: clamp(15px, 1rem, 45px);
   width: 100%;
@@ -40,8 +51,19 @@ body {
   transition: --score-percentage 500ms;
 
   background-color: hsl(120, 100%, 50%);
-  background-image: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 40%), hsl(120, 100%, 50%));
-  mask-image: linear-gradient(90deg, #000 max(0, calc(var(--score-percentage) - 5px)), #000a max(0, calc(var(--score-percentage) - 5px)) var(--score-percentage), #0000 var(--score-percentage));
+  background-image: linear-gradient(
+    90deg,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 40%),
+    hsl(120, 100%, 50%)
+  );
+
+  mask-image: linear-gradient(
+    90deg,
+    #000 0% calc(var(--score-percentage) - 5px),
+    #000a calc(var(--score-percentage) - 5px) var(--score-percentage),
+    #0000 var(--score-percentage)
+  );
 }
 .score .points {
   position: absolute;
@@ -157,6 +179,7 @@ button.catch.hit-effect .hit-span .inner {
   height: 100%;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 .win * {
   font-size: 4em;
